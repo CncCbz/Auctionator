@@ -1,5 +1,5 @@
 function Auctionator.Utilities.GetPetLevelFromLink(itemLink)
-  local _, _, level = strsplit(":", (itemLink:match("battlepet:.*")))
+  local _, _, level = strsplit(":", itemLink)
 
   return tonumber(level)
 end
