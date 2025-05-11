@@ -9,6 +9,7 @@ function Auctionator.Config.InitializeFrames()
     "SellingAllItems",
     "Quantities",
     "Cancelling",
+    "CommodityPrices",
 
     "Profile",
 

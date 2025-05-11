@@ -11,7 +11,7 @@
     </Scripts>
     <Layers>
       <Layer>
-        <FontString parentKey="PurchaseDetails" inherits="GameFontHighlightLarge" text="AUCTIONATOR_L_BUYING_X_FOR_X" justifyH="CENTER">
+        <FontString parentKey="PurchaseDetails" inherits="GameFontHighlightLarge" text="价格差异较大，请确认" justifyH="CENTER">
           <Anchors>
             <Anchor point="TOPLEFT" y="18" x="20"/>
             <Anchor point="TOPRIGHT" y="18" x="-20"/>
@@ -21,7 +21,7 @@
       </Layer>
     </Layers>
     <Frames>
-      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="CANCEL" parentKey="CancelButton">
+      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="取消" parentKey="CancelButton">
         <Anchors>
           <Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOM" y="20"/>
         </Anchors>
@@ -31,7 +31,7 @@
           </OnClick>
         </Scripts>
       </Button>
-      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="AUCTIONATOR_L_CONTINUE" parentKey="ContinueButton">
+      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="继续" parentKey="ContinueButton">
         <Anchors>
           <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" y="20"/>
         </Anchors>
@@ -53,10 +53,11 @@
     <Size x="400" y="140"/>
     <Scripts>
       <OnHide method="OnHide"/>
+      <OnKeyDown method="OnKeyDown"/>
     </Scripts>
     <Layers>
       <Layer>
-        <FontString parentKey="PurchaseDetails" inherits="GameFontHighlightMedium" text="AUCTIONATOR_L_BUYING_X_FOR_X" justifyH="CENTER">
+        <FontString parentKey="PurchaseDetails" inherits="GameFontHighlightMedium" text="确认购买" justifyH="CENTER">
           <Anchors>
             <Anchor point="TOPLEFT" x="20"/>
             <Anchor point="TOPRIGHT" x="-20"/>
@@ -66,7 +67,7 @@
       </Layer>
     </Layers>
     <Frames>
-      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="CANCEL" parentKey="CancelButton">
+      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="取消" parentKey="CancelButton">
         <Anchors>
           <Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOM" y="20"/>
         </Anchors>
@@ -76,7 +77,7 @@
           </OnClick>
         </Scripts>
       </Button>
-      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="ACCEPT" parentKey="AcceptButton">
+      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="接受" parentKey="AcceptButton">
         <Anchors>
           <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" y="20"/>
         </Anchors>
@@ -98,6 +99,7 @@
     <Size x="450" y="190"/>
     <Scripts>
       <OnHide method="OnHide"/>
+      <OnKeyDown method="OnKeyDown"/>
     </Scripts>
     <Layers>
       <Layer>
@@ -121,7 +123,7 @@
           <OnEscapePressed>self:ClearFocus()</OnEscapePressed>
         </Scripts>
       </EditBox>
-      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="CANCEL" parentKey="CancelButton">
+      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="取消" parentKey="CancelButton">
         <Anchors>
           <Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOM" y="20"/>
         </Anchors>
@@ -131,7 +133,7 @@
           </OnClick>
         </Scripts>
       </Button>
-      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="ACCEPT" parentKey="AcceptButton">
+      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="接受" parentKey="AcceptButton">
         <Anchors>
           <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" y="20"/>
         </Anchors>
@@ -161,7 +163,7 @@
       <Anchor point="BOTTOMRIGHT" relativeKey="$parent.ResultsListing"/>
     </Anchors>
     <Frames>
-      <Button parentKey="BackButton" inherits="UIPanelDynamicResizeButtonTemplate" text="BACK">
+      <Button parentKey="BackButton" inherits="UIPanelDynamicResizeButtonTemplate" text="返回">
         <Anchors>
           <Anchor point="TOPLEFT" y="-10" x="5"/>
         </Anchors>
@@ -204,13 +206,13 @@
         </Anchors>
         <Layers>
           <Layer>
-            <FontString parentKey="QuantityLabel" text="AUCTIONATOR_L_QUANTITY" inherits="GameFontNormal" justifyH="RIGHT">
+            <FontString parentKey="QuantityLabel" text="数量" inherits="GameFontNormal" justifyH="RIGHT">
               <Anchors>
                 <Anchor point="TOPLEFT" y="-4"/>
                 <Anchor point="RIGHT" relativePoint="CENTER" x="-20"/>
               </Anchors>
             </FontString>
-            <FontString parentKey="UnitPriceLabel" text="AUCTIONATOR_L_UNIT_PRICE" inherits="GameFontNormal" justifyH="RIGHT">
+            <FontString parentKey="UnitPriceLabel" text="单价" inherits="GameFontNormal" justifyH="RIGHT">
               <Anchors>
                 <Anchor point="TOPLEFT" y="-50"/>
                 <Anchor point="RIGHT" relativePoint="CENTER" x="-20"/>
@@ -222,7 +224,7 @@
                 <Anchor point="LEFT" relativePoint="RIGHT" x="-110"/>
               </Anchors>
             </FontString>
-            <FontString parentKey="TotalPriceLabel" text="AUCTIONATOR_L_TOTAL_PRICE_PLAIN" inherits="GameFontNormal" justifyH="RIGHT">
+            <FontString parentKey="TotalPriceLabel" text="总价" inherits="GameFontNormal" justifyH="RIGHT">
               <Anchors>
                 <Anchor point="TOPLEFT" y="-100"/>
                 <Anchor point="RIGHT" relativePoint="CENTER" x="-20"/>
@@ -232,6 +234,12 @@
               <Anchors>
                 <Anchor point="TOPRIGHT" y="-100" x="20"/>
                 <Anchor point="LEFT" relativePoint="RIGHT" x="-110"/>
+              </Anchors>
+            </FontString>
+            <FontString parentKey="MaxPriceText" inherits="GameFontHighlight" justifyH="LEFT" hidden="true">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeKey="$parent.TotalPriceLabel" relativePoint="BOTTOMLEFT" y="-15"/>
+                <Anchor point="RIGHT" relativePoint="RIGHT" x="-10"/>
               </Anchors>
             </FontString>
           </Layer>
@@ -247,17 +255,89 @@
               <OnEscapePressed>self:ClearFocus()</OnEscapePressed>
             </Scripts>
           </EditBox>
-          <Button parentKey="BuyButton" inherits="UIPanelDynamicResizeButtonTemplate" text="AUCTIONATOR_L_BUY_NOW">
+          
+          <Button parentKey="BuyButton" name="AuctionatorBuyCommodityButton" inherits="UIPanelDynamicResizeButtonTemplate" text="购买">
             <Scripts>
               <OnClick>
                 self:GetParent():GetParent():BuyClicked()
               </OnClick>
             </Scripts>
             <Anchors>
-              <Anchor point="TOPLEFT" y="-150" x="40"/>
-              <Anchor point="TOPRIGHT" y="-150" x="-40"/>
+              <Anchor point="TOPLEFT" relativeKey="$parent.TotalPriceLabel" relativePoint="BOTTOMLEFT" y="-50"/>
+              <Anchor point="RIGHT" relativePoint="RIGHT" x="-40"/>
             </Anchors>
           </Button>
+          
+          <EditBox parentKey="MaxPriceGold" letters="6" inherits="AuctionatorRetailImportLargeMoneyInputBoxTemplate">
+            <Size x="60" y="20" />
+            <KeyValues>
+              <KeyValue key="iconAtlas" value="auctionhouse-icon-coin-gold" type="string"/>
+            </KeyValues>
+            <Anchors>
+              <Anchor point="LEFT"/>
+              <Anchor point="TOPLEFT" relativeKey="$parent.BuyButton" relativePoint="BOTTOMLEFT" y="-15"/>
+            </Anchors>
+            <FontString inherits="ChatFontNormal" justifyH="CENTER" />
+          </EditBox>
+
+          <EditBox parentKey="MaxPriceSilver" letters="6" inherits="AuctionatorRetailImportLargeMoneyInputBoxTemplate">
+            <Size x="60" y="20" />
+            <KeyValues>
+              <KeyValue key="iconAtlas" value="auctionhouse-icon-coin-silver" type="string"/>
+            </KeyValues>
+            <Anchors>
+              <Anchor point="LEFT" relativeKey="$parent.MaxPriceGold" relativePoint="RIGHT" x="5"/>
+            </Anchors>
+            <FontString inherits="ChatFontNormal" justifyH="CENTER" />
+          </EditBox>
+          
+          
+          <Button parentKey="SetMaxPriceButton" inherits="UIPanelButtonTemplate">
+            <Size x="80" y="22"/>
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeKey="$parent.MaxPriceLabel" relativePoint="BOTTOMLEFT" y="90"/>
+            </Anchors>
+            <ButtonText text="设置"/>
+            <Scripts>
+              <OnClick>
+                self:GetParent():GetParent():SetManualMaxPrice()
+              </OnClick>
+            </Scripts>
+          </Button>
+          
+          <Button parentKey="UseCurrentButton" inherits="UIPanelButtonTemplate">
+            <Size x="80" y="22"/>
+            <Anchors>
+              <Anchor point="LEFT" relativeKey="$parent.SetMaxPriceButton" relativePoint="RIGHT" x="5"/>
+            </Anchors>
+            <ButtonText text="当前"/>
+            <Scripts>
+              <OnClick>
+                self:GetParent():GetParent():SetCurrentAsMaxPrice()
+              </OnClick>
+            </Scripts>
+          </Button>
+          
+          <Button parentKey="RemoveMaxPriceButton" inherits="UIPanelButtonTemplate">
+            <Size x="165" y="22"/>
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeKey="$parent.SetMaxPriceButton" relativePoint="BOTTOMLEFT" y="-5"/>
+            </Anchors>
+            <ButtonText text="删除"/>
+            <Scripts>
+              <OnClick>
+                self:GetParent():GetParent():RemoveMaxPrice()
+              </OnClick>
+            </Scripts>
+          </Button>
+          
+          <FontString parentKey="MaxPriceLabel" text="最大购买价格:" inherits="GameFontNormal" justifyH="LEFT">
+            <Anchors>
+              <Anchor point="BOTTOM" relativeKey="$parent.MaxPriceGold" relativePoint="TOP" y="2"/>
+              <Anchor point="LEFT" relativeKey="$parent.MaxPriceGold"/>
+            </Anchors>
+          </FontString>
+          
         </Frames>
       </Frame>
       <Frame parentKey="ResultsListing" inherits="AuctionatorResultsListingTemplate">

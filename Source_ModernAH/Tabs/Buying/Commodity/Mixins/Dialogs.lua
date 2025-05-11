@@ -41,12 +41,26 @@ function AuctionatorBuyCommodityFinalConfirmationDialogMixin:SetDetails(details)
     )
   self.purchasePending = true
   self:Show()
+  self:SetPropagateKeyboardInput(false)
+  self:SetFrameStrata("DIALOG")
+  self:EnableKeyboard(true)
 end
 
 function AuctionatorBuyCommodityFinalConfirmationDialogMixin:ConfirmPurchase()
+  print("确认购买")
   C_AuctionHouse.ConfirmCommoditiesPurchase(self.itemID, self.quantity)
   self.purchasePending = false
   self:Hide()
+  -- 一行黄色打印购买商品的id和数量和价格
+  print("|cffff0000 购买商品的id: " .. self.itemID .. " 数量: " .. self.quantity .. " 价格: " .. self.unitPrice .. " |r")
+end
+
+function AuctionatorBuyCommodityFinalConfirmationDialogMixin:OnKeyDown(key)
+  if key == "ENTER" or key == Auctionator.Config.Get(Auctionator.Config.Options.COMMODITY_CONFIRM_SHORTCUT) then
+    self:ConfirmPurchase()
+  elseif key == "ESCAPE" then
+    self:Hide()
+  end
 end
 
 AuctionatorBuyCommodityQuantityCheckConfirmationDialogMixin = {}
@@ -71,12 +85,23 @@ function AuctionatorBuyCommodityQuantityCheckConfirmationDialogMixin:SetDetails(
   self.purchasePending = true
   self:Show()
   self.QuantityInput:SetFocus()
+  self:SetPropagateKeyboardInput(false)
+  self:SetFrameStrata("DIALOG")
+  self:EnableKeyboard(true)
 end
 
 function AuctionatorBuyCommodityQuantityCheckConfirmationDialogMixin:ConfirmPurchase()
   if tonumber(self.QuantityInput:GetText()) == self.quantity then
     C_AuctionHouse.ConfirmCommoditiesPurchase(self.itemID, self.quantity)
     self.purchasePending = false
+    self:Hide()
+  end
+end
+
+function AuctionatorBuyCommodityQuantityCheckConfirmationDialogMixin:OnKeyDown(key)
+  if key == "ENTER" or key == Auctionator.Config.Get(Auctionator.Config.Options.COMMODITY_CONFIRM_SHORTCUT) then
+    self:ConfirmPurchase()
+  elseif key == "ESCAPE" then
     self:Hide()
   end
 end

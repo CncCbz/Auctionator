@@ -7,4 +7,5 @@
   <Script file="SellingShortcuts.lua"/>
   <Script file="Quantities.lua"/>
   <Script file="Cancelling.lua"/>
+  <Script file="CommodityPrices.lua"/>
 </Ui>

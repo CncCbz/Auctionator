@@ -1,0 +1,113 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+  <Frame
+    name="AuctionatorConfigCommodityPricesFrameTemplate"
+    mixin="AuctionatorConfigCommodityPricesFrameMixin"
+    virtual="true">
+
+    <Scripts>
+      <OnLoad method="OnLoad"/>
+      <OnShow method="OnShow"/>
+      <OnHide method="Save"/>
+    </Scripts>
+
+    <Frames>
+      <Frame inherits="AuctionatorConfigurationTitleFrame" parentKey="TitleArea">
+        <KeyValues>
+          <KeyValue key="titleText" value="商品最大价格" type="string" />
+          <KeyValue key="subTitleText" value="设置商品的最大购买价格，以便使用快捷键快速购买。" type="string"/>
+        </KeyValues>
+      </Frame>
+      
+      <Frame parentKey="CommodityBuyShortcut" inherits="AuctionatorKeyBindingConfigTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.TitleArea" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+        <KeyValues>
+          <KeyValue key="labelText" value="购买商品快捷键" type="string"/>
+          <KeyValue key="tooltipText" value="在购买视图中快速购买商品的快捷键。" type="string"/>
+          <KeyValue key="tooltipTitleText" value="自定义键盘快捷键" type="string"/>
+        </KeyValues>
+      </Frame>
+      
+      <Frame parentKey="CommodityConfirmShortcut" inherits="AuctionatorKeyBindingConfigTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.CommodityBuyShortcut" relativePoint="BOTTOMLEFT" y="-15"/>
+        </Anchors>
+        <KeyValues>
+          <KeyValue key="labelText" value="确认购买快捷键" type="string"/>
+          <KeyValue key="tooltipText" value="在确认对话框中确认购买的快捷键。" type="string"/>
+          <KeyValue key="tooltipTitleText" value="自定义键盘快捷键" type="string"/>
+        </KeyValues>
+      </Frame>
+      
+      <ScrollFrame parentKey="ScrollBox" inherits="UIPanelScrollFrameTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.CommodityConfirmShortcut" relativePoint="BOTTOMLEFT" y="-20"/>
+          <Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-30"/>
+        </Anchors>
+        <Frames>
+          <Frame parentKey="ScrollFrame">
+            <Anchors>
+              <Anchor point="TOPLEFT"/>
+              <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-16"/>
+            </Anchors>
+            <Frames>
+              <Frame parentKey="Content">
+                <Size x="570" y="500"/>
+                <Anchors>
+                  <Anchor point="TOPLEFT"/>
+                </Anchors>
+                <Frames>
+                  <EditBox parentKey="ItemID" autoFocus="false" inherits="InputBoxTemplate">
+                    <Size x="120" y="25"/>
+                    <Anchors>
+                      <Anchor point="TOPLEFT" x="20" y="-10"/>
+                    </Anchors>
+                    <FontString inherits="ChatFontNormal"/>
+                    <Layers>
+                      <Layer level="BACKGROUND">
+                        <FontString inherits="GameFontNormal" text="物品ID">
+                          <Anchors>
+                            <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="2"/>
+                          </Anchors>
+                        </FontString>
+                      </Layer>
+                    </Layers>
+                  </EditBox>
+                  
+                  <Frame parentKey="MaxPrice" inherits="AuctionatorConfigurationMoneyInput">
+                    <Size x="150" y="25"/>
+                    <Anchors>
+                      <Anchor point="LEFT" relativeKey="$parent.ItemID" relativePoint="RIGHT" x="20"/>
+                    </Anchors>
+                    <KeyValues>
+                      <KeyValue key="labelText" value="最大价格" type="string"/>
+                    </KeyValues>
+                  </Frame>
+                  
+                  <Button parentKey="AddButton" inherits="UIPanelDynamicResizeButtonTemplate" text="添加">
+                    <Size x="80" y="22"/>
+                    <Anchors>
+                      <Anchor point="LEFT" relativeKey="$parent.MaxPrice" relativePoint="RIGHT" x="20" y="0"/>
+                    </Anchors>
+                    <Scripts>
+                      <OnClick>
+                        self:GetParent():GetParent():GetParent():GetParent():AddMaxPrice()
+                      </OnClick>
+                    </Scripts>
+                  </Button>
+                  
+                  <FontString inherits="GameFontNormal" text="当前最大价格">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" relativeKey="$parent.ItemID" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+                    </Anchors>
+                  </FontString>
+                </Frames>
+              </Frame>
+            </Frames>
+          </Frame>
+        </Frames>
+      </ScrollFrame>
+    </Frames>
+  </Frame>
+</Ui> 

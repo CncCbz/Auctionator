@@ -33,6 +33,13 @@ function AuctionatorBuyCommodityFrameTemplateMixin:OnLoad()
     end
     self:UpdateView()
   end)
+
+  -- 添加按键监听，用于捕获F1快捷键
+  self:SetScript("OnKeyDown", function(_, key)
+    if key == Auctionator.Config.Get(Auctionator.Config.Options.COMMODITY_BUY_SHORTCUT) then
+      self:QuickBuyClicked()
+    end
+  end)
 end
 
 function AuctionatorBuyCommodityFrameTemplateMixin:OnShow()
@@ -40,6 +47,25 @@ function AuctionatorBuyCommodityFrameTemplateMixin:OnShow()
   self:GetParent().ShoppingResultsInset:Hide()
   self:GetParent().ExportCSV:Hide()
   FrameUtil.RegisterFrameForEvents(self, SEARCH_EVENTS)
+  
+  -- 注册快捷键
+  local function SetupBindings()
+    if self:IsVisible() then
+      -- 移除按钮点击绑定，改为使用脚本运行函数
+      -- SetOverrideBinding(self, false, Auctionator.Config.Get(Auctionator.Config.Options.COMMODITY_BUY_SHORTCUT), "CLICK AuctionatorBuyCommodityButton:LeftButton")
+      -- 让OnKeyDown处理快捷键，不需要在这里设置绑定
+    end
+  end
+  
+  if InCombatLockdown() then
+    EventUtil.ContinueAfterAllEvents(SetupBindings, "PLAYER_REGEN_ENABLED")
+  else
+    SetupBindings()
+  end
+  
+  -- 设置为可以接收按键输入
+  self:EnableKeyboard(true)
+  self:SetPropagateKeyboardInput(true)
 end
 
 function AuctionatorBuyCommodityFrameTemplateMixin:OnHide()
@@ -55,6 +81,12 @@ function AuctionatorBuyCommodityFrameTemplateMixin:OnHide()
     self.waitingForPurchase = false
   end
   FrameUtil.UnregisterFrameForEvents(self, SEARCH_EVENTS)
+  
+  -- 清除快捷键绑定
+  ClearOverrideBindings(self)
+  
+  -- 禁用按键接收
+  self:EnableKeyboard(false)
 end
 
 function AuctionatorBuyCommodityFrameTemplateMixin:ReceiveEvent(eventName, ...)
@@ -201,15 +233,47 @@ function AuctionatorBuyCommodityFrameTemplateMixin:UpdateView()
 
     self.DetailsContainer.UnitPriceText:SetText(GetMoneyString(unitPrice, true))
     self.DetailsContainer.TotalPriceText:SetText(GetMoneyString(total, true))
-
+    
+    -- 显示快捷键提示和最大购买价格
+    local maxPricesTable = Auctionator.Config.Get(Auctionator.Config.Options.COMMODITY_MAX_PRICES)
+    local maxPrice = maxPricesTable[self.expectedItemID]
+    
+    if maxPrice then
+      self.DetailsContainer.MaxPriceText:SetText("扫货价 ≤: " .. GetMoneyString(maxPrice, true))
+      self.DetailsContainer.MaxPriceText:Show()
+      -- 设置金币和银币输入框的值
+      self.DetailsContainer.MaxPriceGold:SetText(math.floor(maxPrice / 10000))
+      self.DetailsContainer.MaxPriceSilver:SetText(math.floor((maxPrice % 10000) / 100))
+      self.DetailsContainer.RemoveMaxPriceButton:Enable()
+    else
+      self.DetailsContainer.MaxPriceText:Hide()
+      -- 默认显示当前单价
+      local goldValue = math.floor(unitPrice / 10000)
+      local silverValue = math.floor((unitPrice % 10000) / 100)
+      self.DetailsContainer.MaxPriceGold:SetText(goldValue)
+      self.DetailsContainer.MaxPriceSilver:SetText(silverValue)
+      self.DetailsContainer.RemoveMaxPriceButton:Disable()
+    end
+    
+    self.DetailsContainer.BuyButton:SetText("购买")
     self.DetailsContainer.BuyButton:SetEnabled(total <= GetMoney())
+    self.DetailsContainer.SetMaxPriceButton:Enable()
+    self.DetailsContainer.UseCurrentButton:Enable()
 
   else
     self.DetailsContainer.UnitPriceText:SetText("")
     self.DetailsContainer.TotalPriceText:SetText("")
+    self.DetailsContainer.MaxPriceText:Hide()
+    self.DetailsContainer.MaxPriceGold:SetText("0")
+    self.DetailsContainer.MaxPriceSilver:SetText("0")
+    self.DetailsContainer.BuyButton:SetText("购买")
     self.DetailsContainer.BuyButton:Disable()
+    self.DetailsContainer.SetMaxPriceButton:Disable()
+    self.DetailsContainer.UseCurrentButton:Disable()
+    self.DetailsContainer.RemoveMaxPriceButton:Disable()
   end
 end
+
 function AuctionatorBuyCommodityFrameTemplateMixin:BuyClicked()
   local minUnitPrice = self.results[1].price
   local maxUnitPrice = self.results[1].price
@@ -228,6 +292,51 @@ function AuctionatorBuyCommodityFrameTemplateMixin:BuyClicked()
   else
     self:ForceStartPurchase()
   end
+end
+
+-- 快捷键购买函数
+function AuctionatorBuyCommodityFrameTemplateMixin:QuickBuyClicked()
+  if not self.results or not self.DetailsContainer.BuyButton:IsEnabled() then
+    print("快捷键购买失败")
+    return
+  end
+  
+  local minUnitPrice = self.results[1].price
+  local maxUnitPrice = self.results[1].price
+  for _, r in ipairs(self.results) do
+    if not r.selected then
+      break
+    end
+    maxUnitPrice = r.price
+  end
+  
+  -- 检查是否有最大购买价格设置
+  local maxPricesTable = Auctionator.Config.Get(Auctionator.Config.Options.COMMODITY_MAX_PRICES)
+  local maxPrice = maxPricesTable[self.expectedItemID]
+  
+  -- 没有设置maxPrice
+  if not maxPrice then
+    print("没有设置采购价")
+    return
+  end
+  
+  local hasMaxPrice = (maxPrice ~= nil)
+  local isPriceLowerOrEqual = false
+  
+  if hasMaxPrice then
+    isPriceLowerOrEqual = (maxUnitPrice <= maxPrice)
+  end
+  
+  if hasMaxPrice and isPriceLowerOrEqual then
+    -- 把数量设置为可购买的最大数量的一半
+    self.selectedQuantity = math.floor(self.maxQuantity / 2)
+    self:ForceStartPurchase()
+    return
+  end
+
+  print("价格超过采购价，取消购买")
+  
+  return
 end
 
 function AuctionatorBuyCommodityFrameTemplateMixin:ForceStartPurchase()
@@ -253,13 +362,13 @@ function AuctionatorBuyCommodityFrameTemplateMixin:CheckPurchase(newUnitPrice, n
 
   local prefix = ""
   if originalUnitPrice < newUnitPrice then
-    prefix = RED_FONT_COLOR:WrapTextInColorCode(AUCTIONATOR_L_PRICE_INCREASED .. "\n\n")
+    prefix = RED_FONT_COLOR:WrapTextInColorCode("价格已上涨！" .. "\n\n")
   end
 
   if Auctionator.Config.Get(Auctionator.Config.Options.SHOPPING_ALWAYS_CONFIRM_COMMODITY_QUANTITY) then
     self.QuantityCheckConfirmationDialog:SetDetails({
       prefix = prefix,
-      message = AUCTIONATOR_L_TOTAL_OF_X_FOR_UNIT_PRICE_OF_X,
+      message = "总计 %s，单价 %s",
       itemID = self.expectedItemID,
       quantity = self.selectedQuantity,
       total = newTotalPrice,
@@ -277,4 +386,77 @@ function AuctionatorBuyCommodityFrameTemplateMixin:CheckPurchase(newUnitPrice, n
 
   FrameUtil.UnregisterFrameForEvents(self, PURCHASE_EVENTS)
   self.waitingForPurchase = false -- Cancelling is done by dialog after this
+end
+
+-- 设置当前商品价格为最大购买价格
+function AuctionatorBuyCommodityFrameTemplateMixin:SetCurrentAsMaxPrice()
+  if not self.results or not self.expectedItemID then
+    return
+  end
+  
+  local unitPrice, _ = self:GetPrices()
+  
+  if unitPrice and unitPrice > 0 then
+    local maxPricesTable = Auctionator.Config.Get(Auctionator.Config.Options.COMMODITY_MAX_PRICES) or {}
+    maxPricesTable[self.expectedItemID] = unitPrice
+    Auctionator.Config.Set(Auctionator.Config.Options.COMMODITY_MAX_PRICES, maxPricesTable)
+    
+    -- 更新界面显示
+    self:UpdateView()
+    
+    -- 显示设置成功消息:id+采购价
+    print("已设置|cff00ff00 [" .. self.expectedItemID .. "] |r采购价为: " .. GetMoneyString(unitPrice, true))
+  end
+end
+
+-- 设置手动输入的最大购买价格
+function AuctionatorBuyCommodityFrameTemplateMixin:SetManualMaxPrice()
+  if not self.expectedItemID then
+    return
+  end
+  
+  local goldText = self.DetailsContainer.MaxPriceGold:GetText() or "0"
+  local silverText = self.DetailsContainer.MaxPriceSilver:GetText() or "0"
+  
+  local gold = tonumber(goldText) or 0
+  local silver = tonumber(silverText) or 0
+  
+  local manualPrice = gold * 10000 + silver * 100
+  
+  if manualPrice and manualPrice > 0 then
+    local maxPricesTable = Auctionator.Config.Get(Auctionator.Config.Options.COMMODITY_MAX_PRICES) or {}
+    maxPricesTable[self.expectedItemID] = manualPrice
+    Auctionator.Config.Set(Auctionator.Config.Options.COMMODITY_MAX_PRICES, maxPricesTable)
+    
+    -- 更新界面显示
+    self:UpdateView()
+    
+    -- 显示设置成功消息:id+采购价
+    print("已设置|cff00ff00 [" .. self.expectedItemID .. "] |r采购价为: " .. GetMoneyString(manualPrice, true))
+  else
+    print("|cffff9900请输入有效的价格|r")
+  end
+end
+
+-- 删除当前商品的最大购买价格设置
+function AuctionatorBuyCommodityFrameTemplateMixin:RemoveMaxPrice()
+  if not self.expectedItemID then
+    return
+  end
+  
+  local maxPricesTable = Auctionator.Config.Get(Auctionator.Config.Options.COMMODITY_MAX_PRICES) or {}
+  
+  if maxPricesTable[self.expectedItemID] then
+    local oldPrice = maxPricesTable[self.expectedItemID]
+    maxPricesTable[self.expectedItemID] = nil
+    Auctionator.Config.Set(Auctionator.Config.Options.COMMODITY_MAX_PRICES, maxPricesTable)
+    
+    -- 更新界面显示
+    self:UpdateView()
+    
+    -- 显示删除成功消息
+    print("已设置|cff00ff00 [" .. self.expectedItemID .. "] |r采购价为: " .. GetMoneyString(unitPrice, true))
+  else
+    print("|cffff9900当前商品未设置采购价|r")
+  end
 end

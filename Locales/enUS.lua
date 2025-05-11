@@ -691,5 +691,17 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["CONTRIBUTE_TOOLTIP_HEADER"] = "About donating"
   L["CONTRIBUTE_TOOLTIP_TEXT"] = "Auctionator has had thousands of hours spent on development and support to get it to its current state in just the last few years. Donating is one way of supporting this indefinitely."
 
+  L["CONFIG_COMMODITY_PRICES_CATEGORY"] = "Commodity Max Prices"
+  L["CONFIG_COMMODITY_PRICES_TEXT"] = "Set up max prices for commodities to enable quick buying with shortcuts."
+  L["CONFIG_COMMODITY_BUY_SHORTCUT"] = "Buy Commodity Shortcut"
+  L["CONFIG_COMMODITY_BUY_SHORTCUT_TOOLTIP_TEXT"] = "The shortcut to buy commodities quickly when in buy view."
+  L["CUSTOM_KEYBOARD_SHORTCUTS"] = "Custom Keyboard Shortcuts"
+  L["ITEM_ID"] = "Item ID"
+  L["MAX_PRICE"] = "Max Price"
+  L["ADD"] = "Add"
+  L["CURRENT_MAX_PRICES"] = "Current Maximum Prices"
+  L["BUY_SHORTCUT"] = "Buy"
+  L["MAX_BUY_PRICE"] = "Max Buy: %s"
+
   return L
 end

@@ -7,4 +7,5 @@
   <Include file="SellingShortcuts.xml"/>
   <Include file="Quantities.xml"/>
   <Include file="Cancelling.xml"/>
+  <Include file="CommodityPrices.xml"/>
 </Ui>
