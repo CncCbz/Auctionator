@@ -387,6 +387,7 @@ function AuctionatorBuyCommodityFrameTemplateMixin:CheckPurchase(newUnitPrice, n
       -- 如果价格超过了最大购买价格，取消标记，按正常流程走
       self.isQuickBuy = false
     end
+    return
   end
 
   if Auctionator.Config.Get(Auctionator.Config.Options.SHOPPING_ALWAYS_CONFIRM_COMMODITY_QUANTITY) then
