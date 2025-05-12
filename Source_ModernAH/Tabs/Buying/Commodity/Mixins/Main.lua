@@ -75,6 +75,7 @@ function AuctionatorBuyCommodityFrameTemplateMixin:OnHide()
   self:Hide()
   self.results = nil
   self.maxQuantity = nil
+  self.isQuickBuy = false -- 重置快捷键购买标记
   if self.waitingForPurchase then
     FrameUtil.UnregisterFrameForEvents(self, PURCHASE_EVENTS)
     C_AuctionHouse.CancelCommoditiesPurchase()
@@ -298,6 +299,7 @@ end
 function AuctionatorBuyCommodityFrameTemplateMixin:QuickBuyClicked()
   if not self.results or not self.DetailsContainer.BuyButton:IsEnabled() then
     print("快捷键购买失败")
+    self.isQuickBuy = false -- 重置标记
     return
   end
   
@@ -317,6 +319,7 @@ function AuctionatorBuyCommodityFrameTemplateMixin:QuickBuyClicked()
   -- 没有设置maxPrice
   if not maxPrice then
     print("没有设置采购价")
+    self.isQuickBuy = false -- 重置标记
     return
   end
   
@@ -329,13 +332,15 @@ function AuctionatorBuyCommodityFrameTemplateMixin:QuickBuyClicked()
   
   if hasMaxPrice and isPriceLowerOrEqual then
     -- 把数量设置为可购买的最大数量的一半
-    self.selectedQuantity = math.floor(self.maxQuantity / 2)
+    -- self.selectedQuantity = math.floor(self.maxQuantity / 2)
+    self.isQuickBuy = true -- 添加标记，表示这是快捷键购买
     self:ForceStartPurchase()
     return
   end
 
   print("价格超过采购价，取消购买")
-  
+  self.isQuickBuy = false -- 重置标记
+  self:Search()
   return
 end
 
@@ -363,6 +368,25 @@ function AuctionatorBuyCommodityFrameTemplateMixin:CheckPurchase(newUnitPrice, n
   local prefix = ""
   if originalUnitPrice < newUnitPrice then
     prefix = RED_FONT_COLOR:WrapTextInColorCode("价格已上涨！" .. "\n\n")
+  end
+
+  -- 如果是快捷键购买，并且价格低于或等于最大购买价格，则自动确认购买
+  if self.isQuickBuy then
+    local maxPricesTable = Auctionator.Config.Get(Auctionator.Config.Options.COMMODITY_MAX_PRICES)
+    local maxPrice = maxPricesTable[self.expectedItemID]
+    
+    if maxPrice and newUnitPrice <= maxPrice then
+      -- 直接确认购买，不显示对话框
+      print("自动确认购买 " .. self.selectedQuantity .. " 个商品，单价: " .. GetMoneyString(newUnitPrice, true))
+      C_AuctionHouse.ConfirmCommoditiesPurchase(self.expectedItemID, self.selectedQuantity)
+      FrameUtil.UnregisterFrameForEvents(self, PURCHASE_EVENTS)
+      self.waitingForPurchase = false
+      self.isQuickBuy = false -- 重置标记
+      return
+    else
+      -- 如果价格超过了最大购买价格，取消标记，按正常流程走
+      self.isQuickBuy = false
+    end
   end
 
   if Auctionator.Config.Get(Auctionator.Config.Options.SHOPPING_ALWAYS_CONFIRM_COMMODITY_QUANTITY) then
@@ -455,7 +479,7 @@ function AuctionatorBuyCommodityFrameTemplateMixin:RemoveMaxPrice()
     self:UpdateView()
     
     -- 显示删除成功消息
-    print("已设置|cff00ff00 [" .. self.expectedItemID .. "] |r采购价为: " .. GetMoneyString(unitPrice, true))
+    print("|cffff9900已删除 [" .. self.expectedItemID .. "] 的采购价设置|r")
   else
     print("|cffff9900当前商品未设置采购价|r")
   end

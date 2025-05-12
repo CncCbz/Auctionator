@@ -34,6 +34,7 @@ end
 function AuctionatorBuyCommodityFinalConfirmationDialogMixin:SetDetails(details)
   self.itemID = details.itemID
   self.quantity = details.quantity
+  self.unitPrice = details.unitPrice  -- 存储单价
   self.PurchaseDetails:SetText(details.prefix .. AUCTIONATOR_L_CONFIRM_PURCHASE_OF_X_FOR_X
     :format(Auctionator.Utilities.CreateCountString(details.quantity),
       GetMoneyString(details.total, true)) .. "\n\n" ..
@@ -52,7 +53,7 @@ function AuctionatorBuyCommodityFinalConfirmationDialogMixin:ConfirmPurchase()
   self.purchasePending = false
   self:Hide()
   -- 一行黄色打印购买商品的id和数量和价格
-  print("|cffff0000 购买商品的id: " .. self.itemID .. " 数量: " .. self.quantity .. " 价格: " .. self.unitPrice .. " |r")
+  print("|cffff0000购买商品的id: " .. self.itemID .. " 数量: " .. self.quantity .. " 价格: " .. GetMoneyString(self.unitPrice, true) .. "|r")
 end
 
 function AuctionatorBuyCommodityFinalConfirmationDialogMixin:OnKeyDown(key)
