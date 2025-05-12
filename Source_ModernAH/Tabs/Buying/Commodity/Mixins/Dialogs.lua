@@ -48,12 +48,11 @@ function AuctionatorBuyCommodityFinalConfirmationDialogMixin:SetDetails(details)
 end
 
 function AuctionatorBuyCommodityFinalConfirmationDialogMixin:ConfirmPurchase()
-  print("确认购买")
+  print(date("%H:%M:%S") .. " 确认购买")
   C_AuctionHouse.ConfirmCommoditiesPurchase(self.itemID, self.quantity)
   self.purchasePending = false
   self:Hide()
-  -- 一行黄色打印购买商品的id和数量和价格
-  print("|cffff0000购买商品的id: " .. self.itemID .. " 数量: " .. self.quantity .. " 价格: " .. GetMoneyString(self.unitPrice, true) .. "|r")
+  print(date("%H:%M:%S") .. " |cffff0000购买商品的id: " .. self.itemID .. " 数量: " .. self.quantity .. " 价格: " .. GetMoneyString(self.unitPrice, true) .. "|r")
 end
 
 function AuctionatorBuyCommodityFinalConfirmationDialogMixin:OnKeyDown(key)

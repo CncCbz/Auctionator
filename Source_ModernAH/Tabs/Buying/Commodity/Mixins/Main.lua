@@ -298,7 +298,7 @@ end
 -- 快捷键购买函数
 function AuctionatorBuyCommodityFrameTemplateMixin:QuickBuyClicked()
   if not self.results or not self.DetailsContainer.BuyButton:IsEnabled() then
-    print("快捷键购买失败")
+    print(date("%H:%M:%S") .. " 快捷键购买失败")
     self.isQuickBuy = false -- 重置标记
     return
   end
@@ -318,7 +318,7 @@ function AuctionatorBuyCommodityFrameTemplateMixin:QuickBuyClicked()
   
   -- 没有设置maxPrice
   if not maxPrice then
-    print("没有设置采购价")
+    print(date("%H:%M:%S") .. " 没有设置采购价")
     self.isQuickBuy = false -- 重置标记
     return
   end
@@ -338,7 +338,7 @@ function AuctionatorBuyCommodityFrameTemplateMixin:QuickBuyClicked()
     return
   end
 
-  print("价格超过采购价，取消购买")
+  print(date("%H:%M:%S") .. " 价格超过采购价，取消购买")
   self.isQuickBuy = false -- 重置标记
   self:Search()
   return
@@ -377,7 +377,7 @@ function AuctionatorBuyCommodityFrameTemplateMixin:CheckPurchase(newUnitPrice, n
     
     if maxPrice and newUnitPrice <= maxPrice then
       -- 直接确认购买，不显示对话框
-      print("自动确认购买 " .. self.selectedQuantity .. " 个商品，单价: " .. GetMoneyString(newUnitPrice, true))
+      print(date("%H:%M:%S") .. " 自动确认购买 " .. self.selectedQuantity .. " 个商品，单价: " .. GetMoneyString(newUnitPrice, true))
       C_AuctionHouse.ConfirmCommoditiesPurchase(self.expectedItemID, self.selectedQuantity)
       FrameUtil.UnregisterFrameForEvents(self, PURCHASE_EVENTS)
       self.waitingForPurchase = false
@@ -430,7 +430,7 @@ function AuctionatorBuyCommodityFrameTemplateMixin:SetCurrentAsMaxPrice()
     self:UpdateView()
     
     -- 显示设置成功消息:id+采购价
-    print("已设置|cff00ff00 [" .. self.expectedItemID .. "] |r采购价为: " .. GetMoneyString(unitPrice, true))
+    print(date("%H:%M:%S") .. " 已设置|cff00ff00 [" .. self.expectedItemID .. "] |r采购价为: " .. GetMoneyString(unitPrice, true))
   end
 end
 
@@ -457,9 +457,9 @@ function AuctionatorBuyCommodityFrameTemplateMixin:SetManualMaxPrice()
     self:UpdateView()
     
     -- 显示设置成功消息:id+采购价
-    print("已设置|cff00ff00 [" .. self.expectedItemID .. "] |r采购价为: " .. GetMoneyString(manualPrice, true))
+    print(date("%H:%M:%S") .. " 已设置|cff00ff00 [" .. self.expectedItemID .. "] |r采购价为: " .. GetMoneyString(manualPrice, true))
   else
-    print("|cffff9900请输入有效的价格|r")
+    print(date("%H:%M:%S") .. " |cffff9900请输入有效的价格|r")
   end
 end
 
@@ -480,8 +480,8 @@ function AuctionatorBuyCommodityFrameTemplateMixin:RemoveMaxPrice()
     self:UpdateView()
     
     -- 显示删除成功消息
-    print("|cffff9900已删除 [" .. self.expectedItemID .. "] 的采购价设置|r")
+    print(date("%H:%M:%S") .. " |cffff9900已删除 [" .. self.expectedItemID .. "] 的采购价设置|r")
   else
-    print("|cffff9900当前商品未设置采购价|r")
+    print(date("%H:%M:%S") .. " |cffff9900当前商品未设置采购价|r")
   end
 end
